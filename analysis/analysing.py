@@ -4,10 +4,11 @@ import json,os,re,jieba.analyse
 from pandas import DataFrame
 import pandas as pd
 import pygal
-import datetime
+import datetime,requests
 
 basedir = os.path.dirname(os.path.dirname(__file__))
 
+# path = basedir+"/spiders/jsons/infos.json"
 path = basedir+"/spiders/jsons/infos.json"
 datas = []
 for line in open(path):
@@ -18,6 +19,7 @@ for line in open(path):
 
 frame = DataFrame(datas)
 
+print frame.count()
 
 def get_salary_count():
     kd = frame.salary.value_counts()
@@ -25,7 +27,7 @@ def get_salary_count():
     pie_chart.title = u'技术类薪酬分布'
     for ind, num in kd.iteritems():
         pie_chart.add("%s:%s" % (ind, num), num)
-    pie_chart.render_to_png(os.path.dirname(__file__) + '/chart/salary.png')
+    pie_chart.render_to_file(os.path.dirname(__file__) + '/chart/salary.svg')
 
 def get_kd_count():
     kd = frame.kd.value_counts()
@@ -33,7 +35,7 @@ def get_kd_count():
     pie_chart.title = u'技术类职位数量分布'
     for ind, num in kd.iteritems():
         pie_chart.add("%s:%s" % (ind, num), num)
-    pie_chart.render_to_png(os.path.dirname(__file__) + '/chart/kd.png')
+    pie_chart.render_to_file(os.path.dirname(__file__) + '/chart/kd.svg')
 
 def get_city_experience():
     city_experience = pd.crosstab(frame.city,frame.experience,margins=True).sort_values(by='All',ascending=False)[:11]
@@ -43,7 +45,7 @@ def get_city_experience():
     ce_chart.x_labels = city_education.index
     for i in range(len(list(city_education.T.index))):
         ce_chart.add(city_education.T.index[i], city_education.T.values[i])
-    ce_chart.render_to_png(os.path.dirname(__file__) + '/chart/city_experience.png')
+    ce_chart.render_to_file(os.path.dirname(__file__) + '/chart/city_experience.svg')
 
 
 def get_company_count():
@@ -52,7 +54,7 @@ def get_company_count():
     pie_chart.title = u'技术类前20公司招聘职位数量'
     for ind, num in kd.iteritems():
         pie_chart.add("%s:%s" % (ind, num), num)
-    pie_chart.render_to_png(os.path.dirname(__file__) + '/chart/company.png')
+    pie_chart.render_to_file(os.path.dirname(__file__) + '/chart/company.svg')
 
 
 def get_city_count():
@@ -61,7 +63,7 @@ def get_city_count():
     pie_chart.title = u'技术类20地区招聘数量'
     for cit,num in city.iteritems():
         pie_chart.add("%s:%s" % (cit,num), num)
-    pie_chart.render_to_png(os.path.dirname(__file__)+'/chart/city.png')
+    pie_chart.render_to_file(os.path.dirname(__file__)+'/chart/city.svg')
 
 
 def get_city_phase():
@@ -72,7 +74,7 @@ def get_city_phase():
     funnel_chart.x_labels = city_pahse.index
     for i in range(len(list(city_pahse.T.index))):
         funnel_chart.add(city_pahse.T.index[i], city_pahse.T.values[i])
-    funnel_chart.render_to_png(os.path.dirname(__file__)+'/chart/phase.png')
+    funnel_chart.render_to_file(os.path.dirname(__file__)+'/chart/phase.svg')
 
 def get_industry_count():
     industry = frame.industry.value_counts()[:20]
@@ -80,7 +82,7 @@ def get_industry_count():
     pie_chart.title = u'技术类前20行业领域'
     for ind,num in industry.iteritems():
         pie_chart.add("%s:%s" % (ind,num), num)
-    pie_chart.render_to_png(os.path.dirname(__file__)+'/chart/industry.png')
+    pie_chart.render_to_file(os.path.dirname(__file__)+'/chart/industry.svg')
 
 
 def get_city_education():
@@ -91,7 +93,7 @@ def get_city_education():
     ce_chart.x_labels = city_education.index
     for i in range(len(list(city_education.T.index))):
         ce_chart.add(city_education.T.index[i], city_education.T.values[i])
-    ce_chart.render_to_png(os.path.dirname(__file__) + '/chart/city_edu.png')
+    ce_chart.render_to_file(os.path.dirname(__file__) + '/chart/city_edu.svg')
 
 
 def get_python_guangzhou():
@@ -114,7 +116,7 @@ def get_python_guangzhou():
     pie_chart.x_labels = jobframe.index
     for cit, num in jobframe.iteritems():
         pie_chart.add("%s" % (cit), num)
-    pie_chart.render_to_png(os.path.dirname(__file__) + '/chart/guangzhou_salary.png')
+    pie_chart.render_to_file(os.path.dirname(__file__) + '/chart/guangzhou_salary.svg')
 
 
 def get_key_word():
@@ -137,7 +139,7 @@ def get_key_word():
     pie_chart.title = u'职位描述关键字比重'
     for des in des_jieba:
         pie_chart.add(des.keys()[0], des.values()[0])
-    pie_chart.render_to_png(os.path.dirname(__file__) + '/chart/des.png')
+    pie_chart.render_to_file(os.path.dirname(__file__) + '/chart/des.svg')
 
 def get_key_tag():
     jieba.analyse.set_stop_words(basedir+"/spiders/jsons/words.txt")
@@ -159,7 +161,7 @@ def get_key_tag():
     pie_chart.title =  u'职位诱惑关键字比重'
     for des in des_jieba:
         pie_chart.add(des.keys()[0], des.values()[0])
-    pie_chart.render_to_png(os.path.dirname(__file__) + '/chart/tag.png')
+    pie_chart.render_to_file(os.path.dirname(__file__) + '/chart/tag.svg')
 
 if __name__ == '__main__':
     get_key_word()
